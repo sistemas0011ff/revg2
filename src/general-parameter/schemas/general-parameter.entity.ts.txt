@@ -1,0 +1,41 @@
+import { ObjectType, Field } from "@nestjs/graphql";
+// import { GeneralParameterValue } from "./general-parameter-value.entity";
+import { IsString } from "class-validator";
+import { CustomUuidScalar } from "../scalars/buffer-scalar";
+
+@ObjectType()
+export class GeneralParameter {
+   
+   @Field(() => CustomUuidScalar)
+   idDailyCashier: Buffer;
+
+   @Field()
+   idOu: string;
+
+   @Field()
+   date: Date;
+
+   @Field()
+   idUser: string;
+
+   @Field()
+   note: string;
+   
+   @Field({ nullable: true })
+   idDailyCashierType?: string
+
+   @Field()
+   idStatus: string
+
+   @Field({ nullable: true })
+   @Field()
+   idUserCreate?: string
+   
+   @Field({ nullable: true })
+   createdAt:Date;
+
+   @Field({ nullable: true })
+   idUserUpdate: string
+   @Field({ nullable: true })
+   updatedAt :  Date
+}

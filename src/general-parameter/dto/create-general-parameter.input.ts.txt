@@ -1,0 +1,17 @@
+import { Field, InputType } from "@nestjs/graphql";
+import { IsString } from "class-validator";
+import { GeneralParameterValueInput } from "./create-dailycashier-value.input";
+
+@InputType()
+export class CreateGeneralParameterInput {
+   @Field()
+   @IsString()
+   name: string;
+
+   @Field()
+   @IsString()
+   shortname: string;
+
+   @Field(() => [GeneralParameterValueInput])
+   generalparametervalue?: [GeneralParameterValueInput];
+}

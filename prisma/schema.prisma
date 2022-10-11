@@ -1,0 +1,412 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model accountingPeriod {
+  idAccountingPeriod         Bytes                        @id @db.Binary(16)
+  idOu                       Bytes                        @db.Binary(16)
+  code                       String                       @db.VarChar(10)
+  dateFrom                   DateTime                     @db.DateTime(0)
+  dateTo                     DateTime                     @db.DateTime(0)
+  idAccountingPeriodType     Bytes                        @db.Binary(16)
+  idStatus                   String                       @db.VarChar(20)
+  idUserCreate               Bytes?                       @db.Binary(16)
+  createdAt                  DateTime?                    @db.DateTime(0)
+  idUserUpdate               Bytes?                       @db.Binary(16)
+  updatedAt                  DateTime?                    @db.DateTime(0)
+  accountingTransaction      accountingTransaction[]
+  glaccountStatement         glaccountStatement[]
+  glaccount_AccountingPeriod glaccount_AccountingPeriod[]
+}
+
+model accountingTransaction {
+  idAccountingTransaction     Bytes                       @unique(map: "idaccountingtransaction_UNIQUE") @db.Binary(16)
+  idOu                        Bytes                       @db.Binary(16)
+  idAccountingPeriod          Bytes                       @db.Binary(16)
+  idAccountingTransactionType Bytes                       @db.Binary(16)
+  code                        String                      @db.VarChar(24)
+  date                        DateTime                    @db.DateTime(0)
+  entryDate                   DateTime                    @db.DateTime(0)
+  note                        String                      @db.VarChar(150)
+  idStatus                    String                      @db.VarChar(20)
+  idUserCreate                Bytes                       @db.Binary(16)
+  createdAt                   DateTime                    @db.DateTime(0)
+  idUserUpdate                Bytes?                      @db.Binary(16)
+  updatedAt                   DateTime?                   @db.DateTime(0)
+  accountingPeriod            accountingPeriod            @relation(fields: [idAccountingPeriod], references: [idAccountingPeriod], onDelete: NoAction, onUpdate: NoAction, map: "fk_accountingtransaction_accountingperiod1")
+  accountingTransactionItem   accountingTransactionItem[]
+
+  @@id([idAccountingTransaction, idAccountingPeriod])
+  @@index([idAccountingPeriod], map: "fk_accountingtransaction_accountingperiod1_idx")
+}
+
+model accountingTransactionItem {
+  idAccountingTransactionItem     Bytes                 @db.Binary(16)
+  idOu                            String?               @db.VarChar(45)
+  idAccountingTransaction         Bytes                 @db.Binary(16)
+  idAccountingPeriod              Bytes?                @db.Binary(16)
+  idAccountingTransactionItemType Bytes                 @db.Binary(16)
+  date                            DateTime?             @db.DateTime(0)
+  entryDate                       DateTime?             @db.DateTime(0)
+  code                            String?               @db.VarChar(45)
+  note                            String?               @db.VarChar(150)
+  item                            Int?
+  idGlaccount                     Bytes                 @db.Binary(16)
+  GlaccountName                   String?               @db.VarChar(150)
+  idDocument                      Bytes                 @db.Binary(16)
+  idCurrency1                     Bytes?                @db.Binary(16)
+  amount1                         Decimal?              @db.Decimal(14, 4)
+  debit1                          Decimal?              @db.Decimal(14, 4)
+  credit1                         Decimal?              @db.Decimal(14, 4)
+  exchangeRate1                   Decimal?              @db.Decimal(14, 4)
+  idCurrency2                     Bytes?                @db.Binary(16)
+  amount2                         Decimal?              @db.Decimal(14, 4)
+  debit2                          Decimal?              @db.Decimal(14, 4)
+  credit2                         Decimal?              @db.Decimal(14, 4)
+  exchangeRate2                   Decimal?              @db.Decimal(14, 4)
+  idCurrency3                     String?               @db.VarChar(45)
+  amount3                         Decimal?              @db.Decimal(14, 4)
+  debit3                          Decimal?              @db.Decimal(14, 4)
+  credit3                         Decimal?              @db.Decimal(14, 4)
+  exchangerate3                   Decimal?              @db.Decimal(14, 4)
+  idStatus                        String                @db.VarChar(20)
+  idUserCreate                    Bytes                 @db.Binary(16)
+  createdAt                       DateTime              @db.DateTime(0)
+  idUserUpdate                    Bytes?                @db.Binary(16)
+  updatedAt                       DateTime?             @db.DateTime(0)
+  accountingTransaction           accountingTransaction @relation(fields: [idAccountingTransaction], references: [idAccountingTransaction], onDelete: NoAction, onUpdate: NoAction, map: "fk_Detalle Operacion Contable_Operacion Contable")
+  document                        document              @relation(fields: [idDocument], references: [iddocument], onDelete: NoAction, onUpdate: NoAction, map: "fk_accountingtransactionitem_document1")
+  glaccount                       glaccount             @relation(fields: [idGlaccount], references: [idGlaccount], onDelete: NoAction, onUpdate: NoAction, map: "fk_accountingtransactionitem_glaccount1")
+
+  @@id([idAccountingTransactionItem, idAccountingTransaction, idGlaccount, idDocument])
+  @@index([idAccountingTransaction], map: "fk_Detalle Operacion Contable_Operacion Contable_idx")
+  @@index([idDocument], map: "fk_accountingtransactionitem_document1_idx")
+  @@index([idGlaccount], map: "fk_accountingtransactionitem_glaccount1_idx")
+}
+
+model bankAccount {
+  idBankAccount     Bytes          @id @db.Binary(16)
+  idOu              Bytes          @db.Binary(16)
+  number            String         @db.VarChar(45)
+  interbankNumber   String?        @db.VarChar(45)
+  idCurrency        Bytes          @db.Binary(16)
+  idBankAccountType Bytes          @db.Binary(16)
+  idEntity          Bytes          @db.Binary(16)
+  idUserCreate      Bytes?         @db.Binary(16)
+  createdAt         DateTime?      @db.DateTime(0)
+  idUserUpdate      Bytes?         @db.Binary(16)
+  updatedAt         DateTime?      @db.DateTime(0)
+  documentItem      documentItem[]
+}
+
+model cashierTransaction {
+  idCashierTransaction               Bytes                                @db.Binary(16)
+  idOu                               Bytes                                @db.Binary(16)
+  idDailyCashier                     Bytes                                @db.Binary(16)
+  date                               DateTime                             @db.DateTime(0)
+  dateEntry                          DateTime                             @db.DateTime(0)
+  note                               String?                              @db.VarChar(45)
+  idCashierTransactionType           Bytes                                @db.Binary(16)
+  idCurrency1                        Bytes?                               @db.Binary(16)
+  amount1                            Decimal?                             @db.Decimal(14, 4)
+  credit1                            Decimal?                             @db.Decimal(14, 4)
+  debit1                             Decimal?                             @db.Decimal(14, 4)
+  exchangeRate1                      Decimal?                             @db.Decimal(14, 4)
+  idCurrency2                        Bytes?                               @db.Binary(16)
+  amount2                            Decimal?                             @db.Decimal(14, 4)
+  credit2                            Decimal?                             @db.Decimal(14, 4)
+  debit2                             Decimal?                             @db.Decimal(14, 4)
+  exchangeRate2                      Decimal?                             @db.Decimal(14, 4)
+  idCurrency3                        Bytes?                               @db.Binary(16)
+  amount3                            Decimal?                             @db.Decimal(14, 4)
+  credit3                            Decimal?                             @db.Decimal(14, 4)
+  debit3                             Decimal?                             @db.Decimal(14, 4)
+  exchangeRate3                      Decimal?                             @db.Decimal(14, 4)
+  idStatus                           String                               @db.VarChar(20)
+  idUserCreate                       Bytes?                               @db.Binary(16)
+  createdAt                          DateTime?                            @db.DateTime(0)
+  idUserUpdate                       Bytes?                               @db.Binary(16)
+  updatedAt                          DateTime?                            @db.DateTime(0)
+  dailyCashier                       dailyCashier                         @relation(fields: [idDailyCashier], references: [idDailyCashier], onDelete: NoAction, onUpdate: NoAction, map: "fk_cashiertransaction_dailycashier1")
+  cashierTransactionItem             cashierTransactionItem[]
+  cashierTransaction_DocumentItem    cashierTransaction_DocumentItem[]
+  cashierTransaction_ReservationItem cashierTransaction_ReservationItem[]
+
+  @@id([idCashierTransaction, idDailyCashier])
+  @@index([idDailyCashier], map: "fk_cashiertransaction_dailycashier1_idx")
+}
+
+model cashierTransactionItem {
+  idCashierTransactionItem                                                                          Bytes              @db.Binary(16)
+  idOu                                                                                              Bytes              @db.Binary(16)
+  date                                                                                              DateTime           @db.DateTime(0)
+  dateEntry                                                                                         DateTime           @db.DateTime(0)
+  idCashierTransactionItemType                                                                      Bytes              @db.Binary(16)
+  idCashierTransaction                                                                              Bytes              @db.Binary(16)
+  idDailyCashier                                                                                    Bytes              @db.Binary(16)
+  item                                                                                              Int?
+  idReservation                                                                                     Bytes              @db.Binary(16)
+  idReservationItem                                                                                 Bytes?             @db.Binary(16)
+  idDocumentReservation                                                                             Bytes              @db.Binary(16)
+  idDocumentItemReservation                                                                         Bytes              @db.Binary(16)
+  idDocumentPayment                                                                                 Bytes              @db.Binary(16)
+  idDocumentItemPayment                                                                             Bytes              @db.Binary(16)
+  idCurrency1                                                                                       Bytes?             @db.Binary(16)
+  amount1                                                                                           Decimal?           @db.Decimal(14, 4)
+  credit1                                                                                           Decimal?           @db.Decimal(14, 4)
+  debit1                                                                                            Decimal?           @db.Decimal(14, 4)
+  exchangeRate1                                                                                     Decimal?           @db.Decimal(14, 4)
+  idCurrency2                                                                                       Bytes?             @db.Binary(16)
+  amount2                                                                                           Decimal?           @db.Decimal(14, 4)
+  credit2                                                                                           Decimal?           @db.Decimal(14, 4)
+  debit2                                                                                            Decimal?           @db.Decimal(14, 4)
+  exchangeRate2                                                                                     String?            @db.VarChar(45)
+  idCurrency3                                                                                       String?            @db.VarChar(45)
+  amount3                                                                                           Decimal?           @db.Decimal(14, 4)
+  credit3                                                                                           String?            @db.VarChar(45)
+  debit3                                                                                            String?            @db.VarChar(45)
+  exchangeRate3                                                                                     String?            @db.VarChar(45)
+  idStatus                                                                                          String?            @db.VarChar(20)
+  idUserCreate                                                                                      Bytes?             @db.Binary(16)
+  createdAt                                                                                         DateTime?          @db.DateTime(0)
+  idUserUpdate                                                                                      Bytes?             @db.Binary(8)
+  updateAt                                                                                          DateTime?          @db.DateTime(0)
+  cashierTransaction                                                                                cashierTransaction @relation(fields: [idCashierTransaction, idDailyCashier], references: [idCashierTransaction, idDailyCashier], onDelete: NoAction, onUpdate: NoAction, map: "fk_cashiertransactionitem_cashiertransaction1")
+  documentItem_cashierTransactionItem_idDocumentItemReservation_idDocumentReservationTodocumentItem documentItem       @relation("cashierTransactionItem_idDocumentItemReservation_idDocumentReservationTodocumentItem", fields: [idDocumentItemReservation, idDocumentReservation], references: [idDocumentItem, idDocument], onDelete: NoAction, onUpdate: NoAction, map: "fk_cashiertransactionitem_documentitem1")
+  documentItem_cashierTransactionItem_idDocumentItemPayment_idDocumentPaymentTodocumentItem         documentItem       @relation("cashierTransactionItem_idDocumentItemPayment_idDocumentPaymentTodocumentItem", fields: [idDocumentItemPayment, idDocumentPayment], references: [idDocumentItem, idDocument], onDelete: NoAction, onUpdate: NoAction, map: "fk_cashiertransactionitem_documentitem2")
+
+  @@id([idCashierTransactionItem, idCashierTransaction, idDailyCashier])
+  @@index([idCashierTransaction, idDailyCashier], map: "fk_cashiertransactionitem_cashiertransaction1_idx")
+  @@index([idDocumentItemReservation, idDocumentReservation], map: "fk_cashiertransactionitem_documentitem1_idx")
+  @@index([idDocumentItemPayment, idDocumentPayment], map: "fk_cashiertransactionitem_documentitem2_idx")
+}
+
+model cashierTransaction_DocumentItem {
+  idDailyCashier       Bytes              @db.Binary(16)
+  idCashierTransaction Bytes              @db.Binary(16)
+  idDocument           Bytes              @db.Binary(16)
+  idDocumentItem       Bytes              @db.Binary(16)
+  idOu                 Bytes?             @db.Binary(16)
+  idStatus             String?            @db.VarChar(20)
+  cashierTransaction   cashierTransaction @relation(fields: [idCashierTransaction, idDailyCashier], references: [idCashierTransaction, idDailyCashier], onDelete: NoAction, onUpdate: NoAction, map: "fk_cashiertransaction_has_documentitem_cashiertransaction1")
+  documentItem         documentItem       @relation(fields: [idDocumentItem, idDocument], references: [idDocumentItem, idDocument], onDelete: NoAction, onUpdate: NoAction, map: "fk_cashiertransaction_has_documentitem_documentitem1")
+
+  @@id([idDailyCashier, idCashierTransaction, idDocument, idDocumentItem])
+  @@index([idCashierTransaction, idDailyCashier], map: "fk_cashiertransaction_has_documentitem_cashiertransaction1_idx")
+  @@index([idDocumentItem, idDocument], map: "fk_cashiertransaction_has_documentitem_documentitem1_idx")
+}
+
+model cashierTransaction_ReservationItem {
+  idDailyCashier       Bytes              @db.Binary(16)
+  idCashierTransaction Bytes              @db.Binary(16)
+  idReservation        Bytes              @db.Binary(16)
+  idReservationItem    Bytes              @db.Binary(16)
+  idDocument           Bytes              @db.Binary(16)
+  idDocumentItem       Bytes              @db.Binary(16)
+  idOu                 Bytes              @db.Binary(16)
+  idStatus             String             @db.VarChar(20)
+  cashierTransaction   cashierTransaction @relation(fields: [idCashierTransaction, idDailyCashier], references: [idCashierTransaction, idDailyCashier], onDelete: NoAction, onUpdate: NoAction, map: "fk_cashiertransactionitem_reservationitem_cashiertransaction1")
+  documentItem         documentItem       @relation(fields: [idDocumentItem, idDocument], references: [idDocumentItem, idDocument], onDelete: NoAction, onUpdate: NoAction, map: "fk_cashiertransactionitem_reservationitem_documentitem1")
+
+  @@id([idDailyCashier, idCashierTransaction, idReservation, idReservationItem, idDocument, idDocumentItem])
+  @@index([idReservationItem, idReservation], map: "fk_cashiertransactionitem_has_*reservationitem_*reservation_idx")
+  @@index([idCashierTransaction, idDailyCashier], map: "fk_cashiertransactionitem_reservationitem_cashiertransactio_idx")
+  @@index([idDocumentItem, idDocument], map: "fk_cashiertransactionitem_reservationitem_documentitem1_idx")
+}
+
+model dailyCashier {
+  idDailyCashier     Bytes                @id @db.Binary(16)
+  idOu               Bytes                @db.Binary(16)
+  date               DateTime             @db.DateTime(0)
+  idUser             Bytes                @db.Binary(16)
+  note               String               @db.VarChar(45)
+  idDailyCashierType Bytes?               @db.Binary(16)
+  idStatus           String               @db.VarChar(20)
+  idUserCreate       Bytes?               @db.Binary(16)
+  createdAt          DateTime?            @db.DateTime(0)
+  idUserUpdate       Bytes?               @db.Binary(16)
+  updatedAt          DateTime?            @db.DateTime(0)
+  cashierTransaction cashierTransaction[]
+}
+
+model document {
+  iddocument                Bytes                       @id @db.Binary(16)
+  idOu                      Bytes                       @db.Binary(16)
+  number                    String                      @db.VarChar(45)
+  date                      DateTime                    @db.DateTime(0)
+  dateEntry                 DateTime                    @db.DateTime(0)
+  description               String                      @db.VarChar(150)
+  idDocumentType            Bytes                       @db.Binary(16)
+  idEntity                  Bytes                       @db.Binary(16)
+  idCurrency1               Bytes?                      @db.Binary(16)
+  amount1                   Decimal?                    @db.Decimal(14, 4)
+  credit1                   Decimal?                    @db.Decimal(14, 4)
+  debit1                    Decimal?                    @db.Decimal(14, 4)
+  exchangeRate1             Decimal?                    @db.Decimal(14, 4)
+  idcurrency2               Bytes?                      @db.Binary(16)
+  amount2                   Decimal?                    @db.Decimal(14, 4)
+  credit2                   Decimal?                    @db.Decimal(14, 4)
+  debit2                    Decimal?                    @db.Decimal(14, 4)
+  exchangerate2             Decimal?                    @db.Decimal(14, 4)
+  idCurrency3               Bytes?                      @db.Binary(16)
+  amount3                   Decimal?                    @db.Decimal(14, 4)
+  debit3                    Decimal?                    @db.Decimal(14, 4)
+  exchangeRate3             Decimal?                    @db.Decimal(14, 4)
+  idStatus                  String                      @db.VarChar(20)
+  idUserCreate              Bytes?                      @db.Binary(16)
+  createdAt                 DateTime?                   @db.DateTime(0)
+  idUserUpdate              Bytes?                      @db.Binary(16)
+  updatedAt                 DateTime?                   @db.DateTime(0)
+  accountingTransactionItem accountingTransactionItem[]
+  documentItem              documentItem[]
+  documentStatement         documentStatement[]
+}
+
+model documentItem {
+  idDocumentItem                                                                                              Bytes                                @db.Binary(16)
+  idOu                                                                                                        Bytes                                @db.Binary(16)
+  idDocument                                                                                                  Bytes                                @db.Binary(16)
+  item                                                                                                        Int
+  idDocumentItemType                                                                                          Bytes                                @db.Binary(16)
+  idReservation                                                                                               Bytes?                               @db.Binary(16)
+  idReservationItem                                                                                           Bytes?                               @db.Binary(16)
+  idBankAccount                                                                                               Bytes                                @db.Binary(16)
+  idBank                                                                                                      Bytes?                               @db.Binary(16)
+  idPaymentGateway                                                                                            Bytes?                               @db.Binary(16)
+  idCurrency1                                                                                                 Bytes?                               @db.Binary(16)
+  amount1                                                                                                     Decimal?                             @db.Decimal(14, 4)
+  credit1                                                                                                     Decimal?                             @db.Decimal(14, 4)
+  debit1                                                                                                      Decimal?                             @db.Decimal(14, 4)
+  exchangeRate1                                                                                               Decimal?                             @db.Decimal(14, 4)
+  idCurrency2                                                                                                 Bytes?                               @db.Binary(16)
+  amount2                                                                                                     Decimal?                             @db.Decimal(14, 4)
+  credit2                                                                                                     Decimal?                             @db.Decimal(14, 4)
+  debit2                                                                                                      Decimal?                             @db.Decimal(14, 4)
+  exchangeRate2                                                                                               Decimal?                             @db.Decimal(14, 4)
+  idCurrency3                                                                                                 String?                              @db.VarChar(45)
+  amount3                                                                                                     String?                              @db.VarChar(45)
+  credit3                                                                                                     String?                              @db.VarChar(45)
+  debit3                                                                                                      String?                              @db.VarChar(45)
+  exchangeRate3                                                                                               Decimal?                             @db.Decimal(14, 4)
+  idStatus                                                                                                    String                               @db.VarChar(20)
+  idUserCreate                                                                                                Bytes                                @db.Binary(16)
+  createdAt                                                                                                   DateTime                             @db.DateTime(0)
+  idUserUpdate                                                                                                Bytes?                               @db.Binary(16)
+  updatedAt                                                                                                   DateTime?                            @db.DateTime(0)
+  bankAccount                                                                                                 bankAccount                          @relation(fields: [idBankAccount], references: [idBankAccount], onDelete: NoAction, onUpdate: NoAction, map: "fk_documentitem_bankaccount1")
+  document                                                                                                    document                             @relation(fields: [idDocument], references: [iddocument], onDelete: NoAction, onUpdate: NoAction, map: "fk_documentitem_document1")
+  cashierTransactionItem_cashierTransactionItem_idDocumentItemReservation_idDocumentReservationTodocumentItem cashierTransactionItem[]             @relation("cashierTransactionItem_idDocumentItemReservation_idDocumentReservationTodocumentItem")
+  cashierTransactionItem_cashierTransactionItem_idDocumentItemPayment_idDocumentPaymentTodocumentItem         cashierTransactionItem[]             @relation("cashierTransactionItem_idDocumentItemPayment_idDocumentPaymentTodocumentItem")
+  cashierTransaction_DocumentItem                                                                             cashierTransaction_DocumentItem[]
+  cashierTransaction_ReservationItem                                                                          cashierTransaction_ReservationItem[]
+
+  @@id([idDocumentItem, idDocument])
+  @@index([idBankAccount], map: "fk_documentitem_bankaccount1_idx")
+  @@index([idDocument], map: "fk_documentitem_document1_idx")
+}
+
+model documentStatement {
+  idDocumentStatement     Bytes     @db.Binary(16)
+  idOu                    Bytes     @db.Binary(16)
+  idAccountingPeriod      Bytes     @db.Binary(16)
+  idDocument              Bytes     @db.Binary(16)
+  idDocumentStatementType Bytes     @db.Binary(16)
+  date                    DateTime? @db.DateTime(0)
+  idCurrency1             Bytes?    @db.Binary(16)
+  credit1                 Decimal?  @db.Decimal(14, 2)
+  debit1                  Decimal?  @db.Decimal(14, 2)
+  balance1                Decimal?  @db.Decimal(14, 2)
+  idCurrency2             Bytes?    @db.Binary(16)
+  credit2                 Decimal?  @db.Decimal(14, 2)
+  debit2                  Decimal?  @db.Decimal(14, 2)
+  balance2                Decimal?  @db.Decimal(14, 2)
+  idCurrency3             Bytes?    @db.Binary(16)
+  debit3                  Decimal?  @db.Decimal(14, 4)
+  credit3                 Decimal?  @db.Decimal(14, 4)
+  balance3                Decimal?  @db.Decimal(14, 4)
+  idStatus                String    @db.VarChar(20)
+  idUserCreate            Bytes?    @db.Binary(16)
+  createdAt               DateTime? @db.DateTime(0)
+  idUserUpdate            Bytes?    @db.Binary(16)
+  updatedAt               DateTime? @db.DateTime(0)
+  document                document  @relation(fields: [idDocument], references: [iddocument], onDelete: NoAction, onUpdate: NoAction, map: "fk_documentstatement_document1")
+
+  @@id([idDocumentStatement, idDocument])
+  @@index([idDocument], map: "fk_documentstatement_document1_idx")
+}
+
+model generalparametervalue__documenttype {
+  iddocumenttype Int @id
+
+  @@map("generalparametervalue *documenttype")
+}
+
+model glaccount {
+  idGlaccount                Bytes                        @id @db.Binary(16)
+  idOu                       Bytes?                       @db.Binary(16)
+  code                       String?                      @db.VarChar(16)
+  name                       String?                      @db.VarChar(150)
+  description                String?                      @db.VarChar(150)
+  idGlaccountType            Bytes?                       @db.Binary(16)
+  idEntity                   Bytes?                       @db.Binary(16)
+  idStatus                   String?                      @db.VarChar(20)
+  idUserCreate               Bytes                        @db.Binary(16)
+  createdAt                  DateTime                     @db.DateTime(0)
+  idUserUpdate               Bytes?                       @db.Binary(16)
+  updatedAt                  DateTime?                    @db.DateTime(0)
+  accountingTransactionItem  accountingTransactionItem[]
+  glaccountStatement         glaccountStatement[]
+  glaccount_AccountingPeriod glaccount_AccountingPeriod[]
+}
+
+model glaccountStatement {
+  idGlaccountStatement     Bytes            @db.Binary(16)
+  idOu                     Bytes            @db.Binary(16)
+  idAccountingPeriod       Bytes            @db.Binary(16)
+  idGlaccount              Bytes            @db.Binary(16)
+  idGlaccountStatementType Bytes            @db.Binary(16)
+  idCurrency1              String?          @db.VarChar(45)
+  debit1                   String?          @db.VarChar(45)
+  credit1                  String?          @db.VarChar(45)
+  balance1                 String?          @db.VarChar(45)
+  idCurrency2              String?          @db.VarChar(45)
+  debit2                   String?          @db.VarChar(45)
+  credit2                  String?          @db.VarChar(45)
+  balance2                 String?          @db.VarChar(45)
+  idCurrency3              String?          @db.VarChar(45)
+  debit3                   String?          @db.VarChar(45)
+  credit3                  String?          @db.VarChar(45)
+  balance3                 String?          @db.VarChar(45)
+  idStatus                 String           @db.VarChar(20)
+  idUserCreate             Bytes            @db.Binary(16)
+  createdAt                DateTime         @db.DateTime(0)
+  idUserUpdate             Bytes?           @db.Binary(16)
+  updatedAt                DateTime?        @db.DateTime(0)
+  accountingPeriod         accountingPeriod @relation(fields: [idAccountingPeriod], references: [idAccountingPeriod], onDelete: NoAction, onUpdate: NoAction, map: "fk_glaccountstatement_accountingperiod1")
+  glaccount                glaccount        @relation(fields: [idGlaccount], references: [idGlaccount], onDelete: NoAction, onUpdate: NoAction, map: "fk_glaccountstatement_glaccount1")
+
+  @@id([idGlaccountStatement, idAccountingPeriod, idGlaccount])
+  @@index([idAccountingPeriod], map: "fk_glaccountstatement_accountingperiod1_idx")
+  @@index([idGlaccount], map: "fk_glaccountstatement_glaccount1_idx")
+}
+
+model glaccount_AccountingPeriod {
+  idGlaccount        Bytes            @db.Binary(16)
+  idAccountingPeriod Bytes            @db.Binary(16)
+  idOu               Bytes            @db.Binary(16)
+  idStatus           String?          @db.VarChar(20)
+  idUserCreate       Bytes            @db.Binary(16)
+  createdAt          DateTime         @db.DateTime(0)
+  idUserUpdate       Bytes?           @db.Binary(16)
+  updatedAt          DateTime?        @db.DateTime(0)
+  accountingPeriod   accountingPeriod @relation(fields: [idAccountingPeriod], references: [idAccountingPeriod], onDelete: NoAction, onUpdate: NoAction, map: "fk_glaccount_accountingperiod_accountingperiod1")
+  glaccount          glaccount        @relation(fields: [idGlaccount], references: [idGlaccount], onDelete: NoAction, onUpdate: NoAction, map: "fk_glaccount_accountingperiod_glaccount1")
+
+  @@id([idGlaccount, idAccountingPeriod])
+  @@index([idAccountingPeriod], map: "fk_glaccount_accountingperiod_accountingperiod1_idx")
+}
